@@ -7,9 +7,7 @@ import StreamerRecordPage from "./Pages/StreamerRecordPage";
 import styled from "styled-components";
 
 const BodyContainer = styled.div`
-  width: 100vw;
-  height: 100vh;
-  background-color: rgb(25, 25, 25);
+  padding: 20px;
 `;
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
