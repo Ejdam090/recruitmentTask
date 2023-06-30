@@ -1,17 +1,20 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import axios from "axios";
+import { postRoute } from "../Utils/ApiRoutes";
 
 const SubmissionFormContainer = styled.div`
+  background-color: rgb(20, 20, 20);
   width: 600px;
   display: flex;
+  height: 100%;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-top: 10px;
   padding: 10px;
   border-radius: 10px;
-  border: 1px solid white;
-  h2{
+  border: 3px solid rgb(50, 50, 50);
+  h2 {
     color: white;
     padding: 5px;
   }
@@ -40,6 +43,7 @@ const SubmissionFormContainer = styled.div`
       resize: none;
     }
     button {
+      cursor: pointer;
       width: 300px;
       padding: 10px;
       margin-top: 10px;
@@ -67,14 +71,29 @@ const StreamerSubmissionForm = () => {
   const platforms = ["Twitch", "YouTube", "TikTok", "Kick", "Rumble"];
 
   ///  submit form
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+      const response = await axios.post(postRoute, {
+        name,
+        platform,
+        description,
+      });
+      console.log("Streamer submitted:", response.data);
+
+      // reset form
+      setName("");
+      setPlatform("");
+      setDescription("");
+    } catch (error) {
+      console.log("Error submitting streamer:", error);
+    }
   };
 
   return (
     <SubmissionFormContainer>
-    <h2>Streamer Submission Form</h2>
-      <form onSubmit={handleSubmit}>
+      <h2>Streamer Submission Form</h2>
+      <form onSubmit={(e) => handleSubmit(e)}>
         <label>Name:</label>
         <input
           placeholder="Type name.."
