@@ -14,7 +14,7 @@ const SubmissionFormContainer = styled.div`
   padding: 10px;
   border-radius: 10px;
   border: 3px solid rgb(50, 50, 50);
-  h2 {
+  .title_form {
     color: white;
     padding: 5px;
   }
@@ -37,12 +37,12 @@ const SubmissionFormContainer = styled.div`
       border: none;
       outline: none;
     }
-    textarea {
+    .descriptionStreamer {
       width: 100%;
       height: 200px;
       resize: none;
     }
-    button {
+    .FormBtn {
       cursor: pointer;
       width: 300px;
       padding: 10px;
@@ -62,7 +62,7 @@ const SubmissionFormContainer = styled.div`
     }
   }
 `;
-const StreamerSubmissionForm = () => {
+const StreamerSubmissionForm = ({ onSubmit }) => {
   /// initial values
   const [name, setName] = useState("");
   const [platform, setPlatform] = useState("");
@@ -80,7 +80,7 @@ const StreamerSubmissionForm = () => {
         description,
       });
       console.log("Streamer submitted:", response.data);
-
+      onSubmit({ name, platform, description });
       // reset form
       setName("");
       setPlatform("");
@@ -92,18 +92,23 @@ const StreamerSubmissionForm = () => {
 
   return (
     <SubmissionFormContainer>
-      <h2>Streamer Submission Form</h2>
+      <h2 className="title_form">Streamer Submission Form</h2>
       <form onSubmit={(e) => handleSubmit(e)}>
-        <label>Name:</label>
+        <label className="label__name">Name:</label>
         <input
+          className="Name_input"
           placeholder="Type name.."
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
 
-        <label>Platform:</label>
-        <select value={platform} onChange={(e) => setPlatform(e.target.value)}>
+        <label className="label__platform">Platform:</label>
+        <select
+          className="platform__choose"
+          value={platform}
+          onChange={(e) => setPlatform(e.target.value)}
+        >
           <option value={""}>Select Platform</option>
           {platforms.map((pltform, index) => (
             <option key={index} value={pltform}>
@@ -112,14 +117,17 @@ const StreamerSubmissionForm = () => {
           ))}
         </select>
 
-        <label>Description:</label>
+        <label className="label__description">Description:</label>
         <textarea
+          className="descriptionStreamer"
           placeholder="Type description..."
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         ></textarea>
 
-        <button type="submit">Submit</button>
+        <button className="FormBtn" type="submit">
+          Submit
+        </button>
       </form>
     </SubmissionFormContainer>
   );
