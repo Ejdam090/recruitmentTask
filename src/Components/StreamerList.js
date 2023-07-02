@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
 import axios from "axios";
-import { getRoute } from "../Utils/ApiRoutes";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faThumbsUp } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 
 const StreamerListContainer = styled.div`
   width: 600px;
@@ -14,7 +14,20 @@ const StreamerListContainer = styled.div`
   justify-content: center;
   align-items: center;
   background-color: rgb(35, 35, 35);
-  h3 {
+  .Link_Navigate {
+    margin: 5px;
+    border-radius: 10px;
+    border: none;
+    padding: 10px;
+    background-color: rgb(50, 50, 50);
+    outline: none;
+    color: white;
+    transition: all 0.3s ease-in-out;
+    &:hover {
+      scale: calc(1.1);
+    }
+  }
+  .Title__list {
     color: white;
     padding: 10px;
   }
@@ -22,15 +35,22 @@ const StreamerListContainer = styled.div`
     list-style: none;
     li {
       padding: 10px;
-      p {
+      .NameStreamer,
+      .PlatformName,
+      .DownVotes,
+      .UpVotes {
         color: white;
         padding: 10px;
+      }
+      .Link_Navigate {
+        cursor: pointer;
       }
       .votes {
         display: flex;
         justify-content: center;
         align-items: center;
-        button {
+        .UpVoteBtn,
+        .DownVoteBtn {
           background: none;
           outline: none;
           border: none;
@@ -38,7 +58,14 @@ const StreamerListContainer = styled.div`
           font-size: 1.5em;
           cursor: pointer;
         }
-        p {
+        .UpVoteBtn {
+          color: green;
+        }
+        .DownVoteBtn {
+          color: red;
+        }
+        .UpVotes,
+        .DownVotes {
           margin: 10px;
         }
       }
@@ -46,30 +73,24 @@ const StreamerListContainer = styled.div`
   }
 `;
 
-const StreamerList = () => {
-  const [streamers, setStreamers] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        const response = await axios.get(getRoute);
-        setStreamers(response.data);
-        setIsLoading(false);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchData();
-  }, [isLoading]);
+const StreamerList = ({ streamers }) => {
+  /// navigate to different page with params
+  const navigate = useNavigate();
+  const handleNavigate = (id) => {
+    navigate("/streamer-record-page", {
+      state: {
+        userId: id,
+      },
+    });
+    console.log(id);
+  };
+  // send and update votes about streamer
   const handleClick = async (id, typeVote) => {
-    setIsLoading(true);
     try {
       const host = "http://localhost:5000";
       const send = await axios.put(`${host}/api/streamer/${id}/vote`, {
         voteType: `${typeVote}`,
       });
-      setIsLoading(false);
     } catch (error) {
       console.log(error);
     }
@@ -77,21 +98,35 @@ const StreamerList = () => {
 
   return (
     <StreamerListContainer>
-      <h3>Streamer List</h3>
+      <h3 className="Title__list">Streamer List</h3>
       <ul>
         {streamers.map((streamer) => (
           <li key={streamer._id}>
-            <p>Name: {streamer.name}</p>
-            <p>Platform: {streamer.platform}</p>
+            <p className="NameStreamer">
+              Name:{" "}
+              <button
+                onClick={() => handleNavigate(streamer._id)}
+                className="Link_Navigate"
+              >
+                {streamer.name}
+              </button>
+            </p>
+            <p className="PlatformName">Platform: {streamer.platform}</p>
             <div className="votes">
-              <button onClick={() => handleClick(streamer._id, "upvotes")}>
+              <button
+                className="UpVoteBtn"
+                onClick={() => handleClick(streamer._id, "upvotes")}
+              >
                 <FontAwesomeIcon icon={faThumbsUp} />
               </button>
-              <p>{streamer.upvotes}</p>
-              <button onClick={() => handleClick(streamer._id, "downvotes")}>
+              <p className="UpVotes">{streamer.upvotes}</p>
+              <button
+                className="DownVoteBtn"
+                onClick={() => handleClick(streamer._id, "downvotes")}
+              >
                 <FontAwesomeIcon icon={faThumbsUp} rotation={180} />
               </button>
-              <p>{streamer.downvotes}</p>
+              <p className="DownVotes">{streamer.downvotes}</p>
             </div>
           </li>
         ))}
